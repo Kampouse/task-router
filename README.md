@@ -37,17 +37,19 @@ User input → Task Router → Best Ollama Model
 
 ```bash
 # Clone and setup
-git clone https://github.com/YOUR_USERNAME/task-router
+git clone https://github.com/Kampouse/task-router
 cd task-router
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Generate training data
-python generate_data.py
+# Option 1: Download pre-trained model (recommended)
+gh release download v1.0
+unzip task-router.zip  # Or move model.safetensors to task-router/
 
-# Train (2-3 min)
-python train_simple.py
+# Option 2: Train from scratch
+python generate_data.py    # Generate 2400 samples
+python train_simple.py     # Train (~3 min)
 
 # Test
 python inference.py --benchmark
