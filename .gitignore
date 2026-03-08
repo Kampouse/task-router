@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Model files (too large for git)
+# Uncomment if you want to exclude model from repo
+# task-router/
+
+# Training artifacts
+*.log
+tasks.jsonl
+task-router.db
+trial-*/
+*.bin
+
+# OS
+.DS_Store
+*.swp
+*.swo
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*

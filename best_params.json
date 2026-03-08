@@ -1,0 +1,53 @@
+{
+  "accuracy": 0.9938,
+  "training_time_seconds": 155,
+  "labels": ["coding", "cooking", "creative", "embedding", "general", "math_reasoning", "qa", "research", "summarization", "tools", "translation", "vision"],
+  
+  "ollama_cloud": {
+    "coding": "glm-5",
+    "math_reasoning": "glm-5", 
+    "research": "glm-5",
+    "tools": "glm-5",
+    "creative": "glm-5",
+    "general": "glm-5",
+    "qa": "qwen3.5:9b",
+    "summarization": "qwen3.5:4b",
+    "translation": "qwen3.5:9b",
+    "vision": "qwen3-vl:8b",
+    "cooking": "qwen3.5:4b",
+    "embedding": "nomic-embed-text"
+  },
+  
+  "ollama_local": {
+    "coding": "qwen2.5-coder:7b",
+    "cooking": "llama3.2:3b",
+    "creative": "dolphin3:8b",
+    "embedding": "nomic-embed-text",
+    "general": "mistral:7b",
+    "math_reasoning": "deepseek-r1:7b",
+    "qa": "llama3.2:3b",
+    "research": "qwen3:14b",
+    "summarization": "llama3.2:3b",
+    "tools": "qwen3:8b",
+    "translation": "qwen2.5:7b",
+    "vision": "llava:7b"
+  },
+  
+  "model_reasoning": {
+    "glm-5": "744B params (40B active), best for reasoning, agentic, systems engineering",
+    "qwen3.5": "Multimodal, vision, tools, thinking - good general purpose",
+    "qwen3-vl": "Best vision-language model on Ollama",
+    "qwen2.5-coder": "Best open coding model",
+    "deepseek-r1": "Best open reasoning model",
+    "llava": "Good open vision model",
+    "mistral": "Fast, efficient general purpose"
+  },
+  
+  "params": {
+    "learning_rate": 0.00025,
+    "batch_size": 16,
+    "num_epochs": 2,
+    "weight_decay": 0.06,
+    "warmup_ratio": 0.18
+  }
+}

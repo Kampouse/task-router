@@ -1,0 +1,14 @@
+# Task Router Dependencies
+
+# Core
+torch>=2.0.0
+transformers>=4.35.0
+datasets>=2.14.0
+scikit-learn>=1.3.0
+numpy>=1.24.0
+
+# Hyperparameter search
+optuna>=3.5.0
+
+# Optional: For Apple Silicon MPS acceleration
+# (comes with PyTorch 2.0+)
