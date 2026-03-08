@@ -4,18 +4,31 @@
   "labels": ["coding", "cooking", "creative", "embedding", "general", "math_reasoning", "qa", "research", "summarization", "tools", "translation", "vision"],
   
   "ollama_cloud": {
-    "coding": "glm-5",
-    "math_reasoning": "glm-5", 
-    "research": "glm-5",
-    "tools": "glm-5",
-    "creative": "glm-5",
-    "general": "glm-5",
-    "qa": "qwen3.5:9b",
-    "summarization": "qwen3.5:4b",
-    "translation": "qwen3.5:9b",
+    "coding": "qwen3-coder-next",
+    "math_reasoning": "glm-5",
+    "research": "qwen3.5:27b",
+    "tools": "devstral-small-2",
     "vision": "qwen3-vl:8b",
+    "creative": "qwen3.5:9b",
+    "general": "qwen3.5:9b",
+    "qa": "gemini-3-flash-preview",
+    "summarization": "gemini-3-flash-preview",
+    "translation": "minimax-m2.1",
     "cooking": "qwen3.5:4b",
     "embedding": "nomic-embed-text"
+  },
+  
+  "ollama_cloud_alternatives": {
+    "coding": ["glm-4.7", "minimax-m2.5", "rnj-1", "devstral-small-2"],
+    "math_reasoning": ["deepseek-v3.2", "kimi-k2-thinking"],
+    "research": ["qwen3-next", "kimi-k2.5", "glm-5"],
+    "tools": ["qwen3-coder-next", "nemotron-3-nano", "devstral-2"],
+    "vision": ["kimi-k2.5", "ministral-3"],
+    "creative": ["gemini-3-flash-preview", "cogito-2.1"],
+    "general": ["gemini-3-flash-preview", "qwen3-next"],
+    "qa": ["qwen3.5:9b", "glm-5"],
+    "summarization": ["qwen3.5:4b"],
+    "translation": ["qwen3.5:9b"]
   },
   
   "ollama_local": {
@@ -33,14 +46,104 @@
     "vision": "llava:7b"
   },
   
-  "model_reasoning": {
-    "glm-5": "744B params (40B active), best for reasoning, agentic, systems engineering",
-    "qwen3.5": "Multimodal, vision, tools, thinking - good general purpose",
-    "qwen3-vl": "Best vision-language model on Ollama",
-    "qwen2.5-coder": "Best open coding model",
-    "deepseek-r1": "Best open reasoning model",
-    "llava": "Good open vision model",
-    "mistral": "Fast, efficient general purpose"
+  "model_details": {
+    "qwen3-coder-next": {
+      "specialty": "Coding-focused, agentic coding workflows",
+      "tags": ["tools", "cloud"],
+      "pulls": "744.8K"
+    },
+    "glm-5": {
+      "specialty": "Reasoning, agentic, systems engineering",
+      "size": "744B total (40B active)",
+      "tags": ["cloud"],
+      "pulls": "86.9K"
+    },
+    "qwen3.5": {
+      "specialty": "Multimodal (vision, tools, thinking), most versatile",
+      "sizes": ["0.8b", "2b", "4b", "9b", "27b", "35b", "122b"],
+      "tags": ["vision", "tools", "thinking", "cloud"],
+      "pulls": "950.4K"
+    },
+    "qwen3-vl": {
+      "specialty": "Vision-language, most powerful VLM in Qwen family",
+      "sizes": ["2b", "4b", "8b", "30b", "32b", "235b"],
+      "tags": ["vision", "tools", "thinking", "cloud"],
+      "pulls": "1.9M"
+    },
+    "devstral-small-2": {
+      "specialty": "Tools, codebase exploration, editing files",
+      "size": "24b",
+      "tags": ["vision", "tools", "cloud"],
+      "pulls": "330.2K"
+    },
+    "gemini-3-flash-preview": {
+      "specialty": "Frontier intelligence, speed, cost-efficient",
+      "tags": ["cloud"],
+      "pulls": "74.9K"
+    },
+    "deepseek-v3.2": {
+      "specialty": "Reasoning, agent performance",
+      "tags": ["cloud"],
+      "pulls": "42.5K"
+    },
+    "kimi-k2-thinking": {
+      "specialty": "Thinking, Moonshot AI's best thinking model",
+      "tags": ["cloud"],
+      "pulls": "34.9K"
+    },
+    "kimi-k2.5": {
+      "specialty": "Multimodal agentic, vision + language",
+      "tags": ["cloud"],
+      "pulls": "128.1K"
+    },
+    "minimax-m2.1": {
+      "specialty": "Multilingual, code engineering",
+      "tags": ["cloud"],
+      "pulls": "22.2K"
+    },
+    "glm-4.7": {
+      "specialty": "Coding capability",
+      "tags": ["cloud"],
+      "pulls": "60.7K"
+    },
+    "rnj-1": {
+      "specialty": "Code and STEM",
+      "size": "8b",
+      "tags": ["tools", "cloud"],
+      "pulls": "339.1K"
+    },
+    "nemotron-3-nano": {
+      "specialty": "Agentic, efficient",
+      "size": "30b",
+      "tags": ["tools", "thinking", "cloud"],
+      "pulls": "199K"
+    },
+    "cogito-2.1": {
+      "specialty": "Instruction tuned, MIT license",
+      "size": "671b",
+      "tags": ["cloud"],
+      "pulls": "84.3K"
+    },
+    "qwen3-next": {
+      "specialty": "Parameter efficiency, inference speed",
+      "size": "80b",
+      "tags": ["tools", "thinking", "cloud"],
+      "pulls": "362.1K"
+    }
+  },
+  
+  "routing_logic": {
+    "coding": "qwen3-coder-next is purpose-built for coding workflows. Alternatives: glm-4.7 (coding), devstral-small-2 (codebase exploration)",
+    "math_reasoning": "glm-5 specializes in reasoning and systems engineering. Alternatives: deepseek-v3.2, kimi-k2-thinking",
+    "vision": "qwen3-vl is the most powerful vision-language model. Alternatives: kimi-k2.5 (multimodal agentic)",
+    "research": "qwen3.5:27b is versatile with thinking capabilities. Alternatives: qwen3-next (efficient), kimi-k2.5 (agentic)",
+    "tools": "devstral-small-2 excels at using tools. Alternatives: nemotron-3-nano (agentic), qwen3-coder-next",
+    "creative": "qwen3.5:9b is versatile. Alternatives: gemini-3-flash (frontier), cogito-2.1 (instruction tuned)",
+    "general": "qwen3.5:9b is most versatile. Alternatives: gemini-3-flash (fast)",
+    "qa": "gemini-3-flash for speed. Alternatives: qwen3.5, glm-5 (reasoning)",
+    "summarization": "gemini-3-flash for speed. Alternatives: qwen3.5:4b (smaller)",
+    "translation": "minimax-m2.1 for multilingual. Alternatives: qwen3.5",
+    "cooking": "qwen3.5:4b is sufficient for recipes"
   },
   
   "params": {

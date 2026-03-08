@@ -1,37 +1,20 @@
 # Task Router
 
-A lightweight DistilBERT-based classifier that routes user input to the best Ollama model.
+Route user input to the best Ollama model using DistilBERT classification.
 
 **Accuracy:** 99.38%  
 **Latency:** ~5ms  
-**Model size:** 268MB
+**Model size:** 255MB
 
 ## What it does
 
 ```
 User input → Task Router → Best Ollama Model
      ↓
-"Debug this code" → coding → glm-5 (cloud) / qwen2.5-coder:7b (local)
+"Debug this code" → coding → qwen3-coder-next (cloud) / qwen2.5-coder:7b (local)
 "Analyze this photo" → vision → qwen3-vl:8b (cloud) / llava:7b (local)
-"What is 15% of 200?" → math_reasoning → glm-5 (cloud) / deepseek-r1:7b (local)
+"Calculate 15% of 200" → math_reasoning → glm-5 (cloud) / deepseek-r1:7b (local)
 ```
-
-## 12 Task Categories
-
-| Category | Ollama Cloud | Ollama Local | Best For |
-|----------|--------------|--------------|----------|
-| coding | glm-5 | qwen2.5-coder:7b | Code, debugging |
-| math_reasoning | glm-5 | deepseek-r1:7b | Math, proofs |
-| vision | qwen3-vl:8b | llava:7b | Image analysis |
-| research | glm-5 | qwen3:14b | Information gathering |
-| tools | glm-5 | qwen3:8b | API calls, functions |
-| creative | glm-5 | dolphin3:8b | Stories, creative |
-| general | glm-5 | mistral:7b | Chat, small talk |
-| qa | qwen3.5:9b | llama3.2:3b | Factual questions |
-| summarization | qwen3.5:4b | llama3.2:3b | Summarizing text |
-| translation | qwen3.5:9b | qwen2.5:7b | Language translation |
-| embedding | nomic-embed-text | nomic-embed-text | Semantic search |
-| cooking | qwen3.5:4b | llama3.2:3b | Recipes |
 
 ## Quick Start
 
@@ -45,7 +28,6 @@ pip install -r requirements.txt
 
 # Option 1: Download pre-trained model (recommended)
 gh release download v1.0
-unzip task-router.zip  # Or move model.safetensors to task-router/
 
 # Option 2: Train from scratch
 python generate_data.py    # Generate 2400 samples
@@ -57,12 +39,26 @@ python inference.py --benchmark
 
 ## Usage
 
+### Route with alternatives
+
+```bash
+python inference.py --alternatives "debug this code"
+# Task: coding (99.5%)
+#
+# Cloud:
+#   Primary: qwen3-coder-next
+#   Alternatives: glm-4.7, minimax-m2.5, rnj-1, devstral-small-2
+#
+# Local:
+#   qwen2.5-coder:7b
+```
+
 ### Route to Ollama Cloud
 
 ```bash
-python inference.py --route "debug this async rust code"
+python inference.py --route "debug this code"
 # Task: coding
-# Model: glm-5
+# Model: qwen3-coder-next
 # Confidence: 99.5%
 ```
 
@@ -73,122 +69,79 @@ python inference.py --local "analyze this photo"
 # llava:7b (99.9%)
 ```
 
-### Just classify (no routing)
+### Just classify
 
 ```bash
 python inference.py "what is the capital of france"
 # qa (99.9%)
 ```
 
-### Python API
+## Task → Model Mapping
+
+| Task | Cloud Primary | Cloud Alternatives | Local |
+|------|---------------|-------------------|-------|
+| coding | qwen3-coder-next | glm-4.7, minimax-m2.5, rnj-1, devstral-small-2 | qwen2.5-coder:7b |
+| vision | qwen3-vl:8b | kimi-k2.5, ministral-3 | llava:7b |
+| math_reasoning | glm-5 | deepseek-v3.2, kimi-k2-thinking | deepseek-r1:7b |
+| research | qwen3.5:27b | qwen3-next, kimi-k2.5, glm-5 | qwen3:14b |
+| tools | devstral-small-2 | qwen3-coder-next, nemotron-3-nano | qwen3:8b |
+| creative | qwen3.5:9b | gemini-3-flash, cogito-2.1 | dolphin3:8b |
+| general | qwen3.5:9b | gemini-3-flash | mistral:7b |
+| qa | gemini-3-flash | qwen3.5:9b, glm-5 | llama3.2:3b |
+| summarization | gemini-3-flash | qwen3.5:4b | llama3.2:3b |
+| translation | minimax-m2.1 | qwen3.5:9b | qwen2.5:7b |
+| cooking | qwen3.5:4b | - | llama3.2:3b |
+| embedding | nomic-embed-text | - | nomic-embed-text |
+
+## Ollama Cloud Models
+
+| Model | Specialty | Best For |
+|-------|-----------|----------|
+| **qwen3-coder-next** | Coding-focused, agentic | coding |
+| **qwen3-vl** | Vision-language | vision |
+| **glm-5** | Reasoning, systems engineering | math_reasoning |
+| **qwen3.5** | Multimodal (vision, tools, thinking) | research, creative, general |
+| **devstral-small-2** | Tools, codebase exploration | tools |
+| **gemini-3-flash** | Frontier intelligence, speed | qa, summarization |
+| **minimax-m2.1** | Multilingual | translation |
+| **deepseek-v3.2** | Reasoning, agent | math_reasoning |
+| **kimi-k2.5** | Multimodal agentic | vision, research |
+| **glm-4.7** | Coding | coding |
+
+## Python API
 
 ```python
-from inference import classify, route
+from inference import classify, route, route_with_alternatives
 
 # Classify only
 result = classify("debug this code")
-# {'label': 'coding', 'confidence': 0.995, 'all_scores': {...}}
+# {'label': 'coding', 'confidence': 0.995}
 
-# Route to model
+# Route to cloud model
 result = route("debug this code", mode="cloud")
-# {'task': 'coding', 'model': 'glm-5', 'confidence': 0.995}
+# {'task': 'coding', 'model': 'qwen3-coder-next', 'confidence': 0.995}
 
+# Route to local model
 result = route("debug this code", mode="local")
 # {'task': 'coding', 'model': 'qwen2.5-coder:7b', 'confidence': 0.995}
-```
 
-## Files
-
-```
-task-router/
-├── task-router/          # Trained model (268MB)
-│   ├── model.safetensors
-│   ├── tokenizer.json
-│   └── config.json
-├── generate_data.py      # Generate synthetic training data
-├── train_simple.py       # Train the classifier
-├── inference.py          # Use the classifier
-├── best_params.json      # Config with model mappings
-└── requirements.txt      # Dependencies
-```
-
-## Customization
-
-### Add new task categories
-
-1. Edit `generate_data.py`:
-
-```python
-TASK_DATA = {
-    ...
-    "new_category": [
-        "Example prompt 1",
-        "Example prompt 2",
-    ],
-}
-```
-
-2. Add mapping in `best_params.json`:
-
-```json
-{
-  "ollama_cloud": {
-    "new_category": "model-name"
-  }
-}
-```
-
-3. Retrain:
-
-```bash
-python generate_data.py
-python train_simple.py
-```
-
-### Use different models
-
-Edit `best_params.json`:
-
-```json
-{
-  "ollama_cloud": {
-    "coding": "glm-5",      // Change to any Ollama Cloud model
-    "vision": "qwen3-vl:8b"
-  },
-  "ollama_local": {
-    "coding": "qwen2.5-coder:7b"  // Change to any local model
-  }
-}
+# Get alternatives
+result = route_with_alternatives("debug this code")
+# {
+#   'task': 'coding',
+#   'cloud': 'qwen3-coder-next',
+#   'cloud_alternatives': ['glm-4.7', 'minimax-m2.5', ...],
+#   'local': 'qwen2.5-coder:7b'
+# }
 ```
 
 ## Ollama Cloud Pricing
 
 | Plan | Price | Best For |
 |------|-------|----------|
-| Free | $0 | Light usage, trying models |
-| Pro | $20/mo | Day-to-day work, coding |
+| Free | $0 | Light usage |
+| Pro | $20/mo | Day-to-day work |
 | Max | $100/mo | Heavy usage, agents |
-
-See: https://ollama.com/pricing
-
-## Model Recommendations
-
-### GLM-5 (Ollama Cloud)
-- 744B params (40B active)
-- Best for: Reasoning, agentic, systems engineering
-- Use for: coding, math_reasoning, research, tools
-
-### Qwen3-VL (Ollama Cloud)
-- Best vision-language model
-- Use for: vision tasks
-
-### Qwen2.5-Coder (Local)
-- Best open coding model
-- Use for: coding (local)
-
-### DeepSeek-R1 (Local)
-- Best open reasoning model
-- Use for: math_reasoning (local)
 
 ## Performance
 
@@ -197,24 +150,9 @@ See: https://ollama.com/pricing
 | Accuracy | 99.38% |
 | F1 Score | 99.37% |
 | Training time | ~3 min |
-| Inference latency | ~5ms |
-| Model size | 268MB |
-
-## Requirements
-
-- Python 3.10+
-- PyTorch
-- Transformers
-- 4GB RAM (for inference)
-- 8GB RAM (for training)
+| Inference | ~5ms |
+| Model size | 255MB |
 
 ## License
 
 MIT
-
-## Acknowledgments
-
-- DistilBERT (HuggingFace)
-- Ollama (model hosting)
-- Zhipu AI (GLM-5)
-- Alibaba (Qwen models)

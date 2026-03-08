@@ -11,11 +11,15 @@ try:
         config = json.load(f)
         LABELS = config.get("labels", ["coding", "cooking", "creative", "embedding", "general", "math_reasoning", "qa", "research", "summarization", "tools", "translation", "vision"])
         OLLAMA_CLOUD = config.get("ollama_cloud", {})
+        OLLAMA_CLOUD_ALT = config.get("ollama_cloud_alternatives", {})
         OLLAMA_LOCAL = config.get("ollama_local", {})
+        MODEL_DETAILS = config.get("model_details", {})
 except FileNotFoundError:
     LABELS = ["coding", "cooking", "creative", "embedding", "general", "math_reasoning", "qa", "research", "summarization", "tools", "translation", "vision"]
     OLLAMA_CLOUD = {}
+    OLLAMA_CLOUD_ALT = {}
     OLLAMA_LOCAL = {}
+    MODEL_DETAILS = {}
 
 # Load model
 classifier = pipeline(
@@ -59,7 +63,7 @@ def route(text: str, mode: str = "cloud") -> dict:
     
     # Get model mapping
     if mode == "cloud":
-        model = OLLAMA_CLOUD.get(task, "glm-5")
+        model = OLLAMA_CLOUD.get(task, "qwen3.5:9b")
     else:
         model = OLLAMA_LOCAL.get(task, "mistral:7b")
     
@@ -67,6 +71,25 @@ def route(text: str, mode: str = "cloud") -> dict:
         "task": task,
         "confidence": result["confidence"],
         "model": model,
+        "all_scores": result["all_scores"]
+    }
+
+
+def route_with_alternatives(text: str) -> dict:
+    """Classify text and return primary + alternative models.
+    
+    Returns:
+        dict with 'task', 'confidence', 'cloud', 'cloud_alternatives', 'local'
+    """
+    result = classify(text)
+    task = result["label"]
+    
+    return {
+        "task": task,
+        "confidence": result["confidence"],
+        "cloud": OLLAMA_CLOUD.get(task, "qwen3.5:9b"),
+        "cloud_alternatives": OLLAMA_CLOUD_ALT.get(task, []),
+        "local": OLLAMA_LOCAL.get(task, "mistral:7b"),
         "all_scores": result["all_scores"]
     }
 
@@ -151,6 +174,17 @@ if __name__ == "__main__":
             print(f"Task: {result['task']}")
             print(f"Model: {result['model']}")
             print(f"Confidence: {result['confidence']:.1%}")
+        elif sys.argv[1] == "--alternatives":
+            # Show primary + alternatives
+            text = " ".join(sys.argv[2:])
+            result = route_with_alternatives(text)
+            print(f"Task: {result['task']} ({result['confidence']:.1%})")
+            print(f"\nCloud:")
+            print(f"  Primary: {result['cloud']}")
+            if result['cloud_alternatives']:
+                print(f"  Alternatives: {', '.join(result['cloud_alternatives'])}")
+            print(f"\nLocal:")
+            print(f"  {result['local']}")
         elif sys.argv[1] == "--local":
             # Route to local model
             text = " ".join(sys.argv[2:])
