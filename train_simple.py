@@ -131,4 +131,8 @@ if __name__ == "__main__":
     
     print("\n✅ Done!")
     print(f"Model saved to: ./task-router/")
-    print(f"Accuracy: {result['eval_accuracy']:.2%}")
+    print(f"Benchmark accuracy: {result['eval_accuracy']:.2%}")
+    print()
+    print("⚠️  Note: Benchmark accuracy is on clean synthetic data.")
+    print("   Expected real-world accuracy: 85-95%")
+    print("   For best results, train on your actual user queries.")

@@ -1,6 +1,8 @@
 {
-  "accuracy": 0.9938,
-  "training_time_seconds": 155,
+  "benchmark_accuracy": 0.9938,
+  "expected_real_world_accuracy": "0.85-0.95",
+  "training_data": "synthetic (2400 samples)",
+  "recommendation": "Train on your actual user queries for best results",
   "labels": ["coding", "cooking", "creative", "embedding", "general", "math_reasoning", "qa", "research", "summarization", "tools", "translation", "vision"],
   
   "ollama_cloud": {

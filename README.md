@@ -2,9 +2,12 @@
 
 Route user input to the best Ollama model using DistilBERT classification.
 
-**Accuracy:** 99.38%  
+**Benchmark accuracy:** 99.38% (synthetic data)  
+**Expected real-world:** 85-95% (depends on your data)  
 **Latency:** ~5ms  
 **Model size:** 255MB
+
+> ⚠️ **Important:** Train on YOUR data for best results. The included model was trained on synthetic examples and may not generalize to your specific use case.
 
 ## What it does
 
@@ -143,15 +146,54 @@ result = route_with_alternatives("debug this code")
 | Pro | $20/mo | Day-to-day work |
 | Max | $100/mo | Heavy usage, agents |
 
+## Training on Your Data
+
+**This model was trained on synthetic data.** For production use, train on your actual user queries:
+
+```bash
+# 1. Create your training data (tasks.jsonl)
+{"text": "User query from your app", "label": "coding"}
+{"text": "Another real query", "label": "vision"}
+# ... 500+ examples per category recommended
+
+# 2. Add your categories to generate_data.py
+TASK_DATA = {
+    "your_category": [
+        "example query 1",
+        "example query 2",
+    ],
+}
+
+# 3. Train
+python generate_data.py
+python train_simple.py
+
+# 4. Test
+python inference.py --benchmark
+```
+
+### Why train on your data?
+
+- **Your users speak differently** - slang, domain terms, shorthand
+- **Your tasks are unique** - generic categories may not fit
+- **Better accuracy** - expect 90-98% on your real queries vs 85-95% with this model
+
+### Data collection tips
+
+1. Log user queries from your app
+2. Label them manually (or use an LLM to help)
+3. Aim for 500-2000 examples per category
+4. Include edge cases and mistakes
+5. Balance categories (similar counts)
+
 ## Performance
 
-| Metric | Value |
-|--------|-------|
-| Accuracy | 99.38% |
-| F1 Score | 99.37% |
-| Training time | ~3 min |
-| Inference | ~5ms |
-| Model size | 255MB |
+| Metric | Synthetic (this model) | Your Data (expected) |
+|--------|------------------------|----------------------|
+| Accuracy | 99.38% | 90-98% |
+| Training time | ~3 min | ~3-10 min |
+| Inference | ~5ms | ~5ms |
+| Model size | 255MB | 255MB |
 
 ## License
 

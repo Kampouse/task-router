@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Generate synthetic training data for task classification."""
+"""Generate synthetic training data for task classification.
+
+⚠️  This generates synthetic data for testing. For production:
+    1. Replace TASK_DATA with YOUR actual user queries
+    2. Collect real examples from your app logs
+    3. Label them manually or with LLM assistance
+    4. Aim for 500+ examples per category
+"""
 
 import json
 import random
 
 # Task categories and example prompts
+# REPLACE THIS with your actual user queries for best results
 TASK_DATA = {
     "coding": [
         "How do I fix this bug in my code?",
